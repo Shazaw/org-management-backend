@@ -20,7 +20,7 @@ A backend API for managing organization members, divisions, and events.
 
 1. Clone the repository:
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/Shazaw/org-management-backend
 cd org-management-backend
 ```
 
