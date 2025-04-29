@@ -1,113 +1,68 @@
-const sequelize = require('../config/database');
-const User = require('./user.model');
-const Division = require('./division.model');
-const Event = require('./event.model');
-const Room = require('./room.model');
-const RoomBooking = require('./room-booking.model');
-const OtiBersuara = require('./oti-bersuara.model');
+const fs = require('fs');
+const path = require('path');
+const Sequelize = require('sequelize');
+const process = require('process');
+const basename = path.basename(__filename);
+const env = process.env.NODE_ENV || 'development';
+const config = require(__dirname + '/../config/config.json')[env];
+const db = {};
 
-// User associations
-User.belongsTo(Division, {
-  foreignKey: 'main_division_id',
-  as: 'mainDivision',
+let sequelize;
+if (config.use_env_variable) {
+  sequelize = new Sequelize(process.env[config.use_env_variable], config);
+} else {
+  sequelize = new Sequelize(config.database, config.username, config.password, config);
+}
+
+fs
+  .readdirSync(__dirname)
+  .filter(file => {
+    return (
+      file.indexOf('.') !== 0 &&
+      file !== basename &&
+      file.slice(-3) === '.js' &&
+      file.indexOf('.test.js') === -1
+    );
+  })
+  .forEach(file => {
+    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
+    db[model.name] = model;
+  });
+
+Object.keys(db).forEach(modelName => {
+  if (db[modelName].associate) {
+    db[modelName].associate(db);
+  }
 });
 
-User.belongsTo(Division, {
-  foreignKey: 'managerial_division_id',
-  as: 'managerialDivision',
-});
+// Define relationships
+const { User, Division, Event, Room, RoomBooking, OtiBersuara, DivisionProgress } = db;
 
-User.hasMany(Event, {
-  foreignKey: 'created_by',
-  as: 'createdEvents',
-});
+// User relationships
+User.belongsTo(Division, { as: 'mainDivision', foreignKey: 'main_division_id' });
+User.belongsTo(Division, { as: 'managerialDivision', foreignKey: 'managerial_division_id' });
 
-User.hasMany(RoomBooking, {
-  foreignKey: 'booked_by',
-  as: 'roomBookings',
-});
+// Division relationships
+Division.hasMany(User, { as: 'members', foreignKey: 'main_division_id' });
+Division.hasMany(User, { as: 'managerialMembers', foreignKey: 'managerial_division_id' });
+Division.belongsTo(User, { as: 'head', foreignKey: 'head_id' });
 
-User.hasMany(RoomBooking, {
-  foreignKey: 'approved_by',
-  as: 'approvedBookings',
-});
+// Event relationships
+Event.belongsTo(User, { as: 'creator', foreignKey: 'created_by' });
 
-User.hasMany(OtiBersuara, {
-  foreignKey: 'responded_by',
-  as: 'respondedFeedback',
-});
+// Room Booking relationships
+RoomBooking.belongsTo(Room, { foreignKey: 'room_id' });
+RoomBooking.belongsTo(User, { as: 'booker', foreignKey: 'user_id' });
+RoomBooking.belongsTo(User, { as: 'approver', foreignKey: 'approved_by' });
 
-// Division associations
-Division.hasMany(User, {
-  foreignKey: 'main_division_id',
-  as: 'members',
-});
+// OtiBersuara relationships
+OtiBersuara.belongsTo(User, { as: 'reader', foreignKey: 'read_by' });
 
-Division.hasMany(User, {
-  foreignKey: 'managerial_division_id',
-  as: 'managerialMembers',
-});
+// Division Progress relationships
+DivisionProgress.belongsTo(Division, { foreignKey: 'division_id' });
+DivisionProgress.belongsTo(User, { as: 'creator', foreignKey: 'created_by' });
 
-Division.belongsTo(User, {
-  foreignKey: 'head_id',
-  as: 'head',
-});
+db.sequelize = sequelize;
+db.Sequelize = Sequelize;
 
-Division.hasMany(Event, {
-  foreignKey: 'division_id',
-  as: 'events',
-});
-
-Division.belongsTo(Division, {
-  foreignKey: 'parent_division_id',
-  as: 'parentDivision',
-});
-
-Division.hasMany(Division, {
-  foreignKey: 'parent_division_id',
-  as: 'subDivisions',
-});
-
-// Event associations
-Event.belongsTo(User, {
-  foreignKey: 'created_by',
-  as: 'creator',
-});
-
-// Room associations
-Room.hasMany(RoomBooking, {
-  foreignKey: 'room_id',
-  as: 'bookings',
-});
-
-// RoomBooking associations
-RoomBooking.belongsTo(Room, {
-  foreignKey: 'room_id',
-  as: 'room',
-});
-
-RoomBooking.belongsTo(User, {
-  foreignKey: 'booked_by',
-  as: 'bookedByUser',
-});
-
-RoomBooking.belongsTo(User, {
-  foreignKey: 'approved_by',
-  as: 'approvedByUser',
-});
-
-// OtiBersuara associations
-OtiBersuara.belongsTo(User, {
-  foreignKey: 'responded_by',
-  as: 'responder',
-});
-
-module.exports = {
-  sequelize,
-  User,
-  Division,
-  Event,
-  Room,
-  RoomBooking,
-  OtiBersuara,
-}; 
+module.exports = db; 

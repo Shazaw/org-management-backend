@@ -25,7 +25,7 @@ const User = sequelize.define('User', {
     allowNull: false,
   },
   role: {
-    type: DataTypes.ENUM('admin', 'ceo', 'head', 'member'),
+    type: DataTypes.ENUM('admin', 'ceo', 'head', 'member', 'resource_manager', 'human_development', 'internal_affairs'),
     defaultValue: 'member',
   },
   main_division_id: {
@@ -38,6 +38,10 @@ const User = sequelize.define('User', {
   },
   division_status: {
     type: DataTypes.ENUM('pending', 'confirmed', 'rejected'),
+    defaultValue: 'pending',
+  },
+  head_approval_status: {
+    type: DataTypes.ENUM('pending', 'approved', 'rejected'),
     defaultValue: 'pending',
   },
   available_times: {

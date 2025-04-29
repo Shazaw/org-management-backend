@@ -27,6 +27,14 @@ const Event = sequelize.define('Event', {
     type: DataTypes.ENUM('head_coordinator', 'coordinator', 'sub_coordinator', 'staff'),
     allowNull: true,
     defaultValue: 'staff'
+  },
+  coordinator_approval_status: {
+    type: DataTypes.ENUM('pending', 'approved', 'rejected'),
+    defaultValue: 'pending',
+  },
+  approval_level: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0, // 0 = staff, 1 = sub_coordinator, 2 = coordinator, 3 = head_coordinator
   }
 }, {
   tableName: 'events',

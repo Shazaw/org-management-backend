@@ -7,34 +7,44 @@ const RoomBooking = sequelize.define('RoomBooking', {
     defaultValue: DataTypes.UUIDV4,
     primaryKey: true,
   },
-  roomId: {
+  room_id: {
     type: DataTypes.UUID,
     allowNull: false,
   },
-  startTime: {
+  user_id: {
+    type: DataTypes.UUID,
+    allowNull: false,
+  },
+  start_time: {
     type: DataTypes.DATE,
     allowNull: false,
   },
-  endTime: {
+  end_time: {
     type: DataTypes.DATE,
     allowNull: false,
   },
   purpose: {
     type: DataTypes.TEXT,
-    allowNull: false,
+    allowNull: true,
   },
   status: {
     type: DataTypes.ENUM('pending', 'approved', 'rejected'),
     defaultValue: 'pending',
   },
-  bookedBy: {
-    type: DataTypes.UUID,
-    allowNull: false,
-  },
-  approvedBy: {
+  approved_by: {
     type: DataTypes.UUID,
     allowNull: true,
   },
+  approved_at: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  }
+}, {
+  tableName: 'room_bookings',
+  underscored: true,
+  timestamps: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at'
 });
 
 module.exports = RoomBooking; 

@@ -7,34 +7,36 @@ const OtiBersuara = sequelize.define('OtiBersuara', {
     defaultValue: DataTypes.UUIDV4,
     primaryKey: true,
   },
-  message: {
+  content: {
     type: DataTypes.TEXT,
     allowNull: false,
   },
-  category: {
-    type: DataTypes.ENUM('grievance', 'suggestion', 'complaint', 'other'),
-    allowNull: false,
+  visibility: {
+    type: DataTypes.ENUM('anonymous', 'department_only'),
+    defaultValue: 'anonymous',
+  },
+  department: {
+    type: DataTypes.ENUM('human_development', 'all'),
+    defaultValue: 'all',
   },
   status: {
-    type: DataTypes.ENUM('unread', 'read', 'in_progress', 'resolved'),
-    defaultValue: 'unread',
+    type: DataTypes.ENUM('pending', 'read', 'archived'),
+    defaultValue: 'pending',
   },
-  priority: {
-    type: DataTypes.ENUM('low', 'medium', 'high'),
-    defaultValue: 'medium',
-  },
-  response: {
-    type: DataTypes.TEXT,
-    allowNull: true,
-  },
-  respondedBy: {
+  read_by: {
     type: DataTypes.UUID,
     allowNull: true,
   },
-  respondedAt: {
+  read_at: {
     type: DataTypes.DATE,
     allowNull: true,
-  },
+  }
+}, {
+  tableName: 'oti_bersuara',
+  underscored: true,
+  timestamps: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at'
 });
 
 module.exports = OtiBersuara; 
