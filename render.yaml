@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: org-management-backend
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+
+databases:
+  - name: org-management-db
+    databaseName: org_management
+    user: org_management_user
+    plan: free 
