@@ -8,6 +8,7 @@ const db = {};
 // Use the sequelize instance from database.js
 const sequelize = require('../config/database');
 
+// First, load all models
 fs
   .readdirSync(__dirname)
   .filter(file => {
@@ -33,38 +34,47 @@ fs
     db[modelInstance.name] = modelInstance;
   });
 
+// Then, set up associations if they exist
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {
     db[modelName].associate(db);
   }
 });
 
-// Define relationships
-const { User, Division, Event, Room, RoomBooking, OtiBersuara, DivisionProgress } = db;
+// Now that all models are loaded, set up relationships
+if (db.User && db.Division) {
+  // User relationships
+  db.User.belongsTo(db.Division, { as: 'mainDivision', foreignKey: 'main_division_id' });
+  db.User.belongsTo(db.Division, { as: 'managerialDivision', foreignKey: 'managerial_division_id' });
 
-// User relationships
-User.belongsTo(Division, { as: 'mainDivision', foreignKey: 'main_division_id' });
-User.belongsTo(Division, { as: 'managerialDivision', foreignKey: 'managerial_division_id' });
+  // Division relationships
+  db.Division.hasMany(db.User, { as: 'members', foreignKey: 'main_division_id' });
+  db.Division.hasMany(db.User, { as: 'managerialMembers', foreignKey: 'managerial_division_id' });
+  db.Division.belongsTo(db.User, { as: 'head', foreignKey: 'head_id' });
+}
 
-// Division relationships
-Division.hasMany(User, { as: 'members', foreignKey: 'main_division_id' });
-Division.hasMany(User, { as: 'managerialMembers', foreignKey: 'managerial_division_id' });
-Division.belongsTo(User, { as: 'head', foreignKey: 'head_id' });
+if (db.Event && db.User) {
+  // Event relationships
+  db.Event.belongsTo(db.User, { as: 'creator', foreignKey: 'created_by' });
+}
 
-// Event relationships
-Event.belongsTo(User, { as: 'creator', foreignKey: 'created_by' });
+if (db.RoomBooking && db.Room && db.User) {
+  // Room Booking relationships
+  db.RoomBooking.belongsTo(db.Room, { foreignKey: 'room_id' });
+  db.RoomBooking.belongsTo(db.User, { as: 'booker', foreignKey: 'user_id' });
+  db.RoomBooking.belongsTo(db.User, { as: 'approver', foreignKey: 'approved_by' });
+}
 
-// Room Booking relationships
-RoomBooking.belongsTo(Room, { foreignKey: 'room_id' });
-RoomBooking.belongsTo(User, { as: 'booker', foreignKey: 'user_id' });
-RoomBooking.belongsTo(User, { as: 'approver', foreignKey: 'approved_by' });
+if (db.OtiBersuara && db.User) {
+  // OtiBersuara relationships
+  db.OtiBersuara.belongsTo(db.User, { as: 'reader', foreignKey: 'read_by' });
+}
 
-// OtiBersuara relationships
-OtiBersuara.belongsTo(User, { as: 'reader', foreignKey: 'read_by' });
-
-// Division Progress relationships
-DivisionProgress.belongsTo(Division, { foreignKey: 'division_id' });
-DivisionProgress.belongsTo(User, { as: 'creator', foreignKey: 'created_by' });
+if (db.DivisionProgress && db.Division && db.User) {
+  // Division Progress relationships
+  db.DivisionProgress.belongsTo(db.Division, { foreignKey: 'division_id' });
+  db.DivisionProgress.belongsTo(db.User, { as: 'creator', foreignKey: 'created_by' });
+}
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
