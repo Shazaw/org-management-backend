@@ -11,7 +11,7 @@ module.exports = (sequelize) => {
       type: DataTypes.UUID,
       allowNull: false,
     },
-    user_id: {
+    booked_by: {
       type: DataTypes.UUID,
       allowNull: false,
     },
