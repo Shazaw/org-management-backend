@@ -20,7 +20,16 @@ fs
   })
   .forEach(file => {
     const model = require(path.join(__dirname, file));
-    const modelInstance = model(sequelize);
+    let modelInstance;
+    
+    try {
+      // Try as a class first
+      modelInstance = new model(sequelize);
+    } catch (e) {
+      // If that fails, try as a function
+      modelInstance = model(sequelize);
+    }
+    
     db[modelInstance.name] = modelInstance;
   });
 
