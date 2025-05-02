@@ -26,7 +26,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize());
 
 // Routes
-app.use('/api/auth', require('./routes/auth.routes'));
+app.use('/auth', require('./routes/auth.routes'));
 app.use('/api/users', require('./routes/user.routes'));
 app.use('/api/divisions', require('./routes/division.routes'));
 app.use('/api/events', require('./routes/event.routes'));
