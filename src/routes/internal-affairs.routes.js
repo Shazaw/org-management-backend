@@ -165,7 +165,6 @@ router.get('/reports', authenticateJWT, checkRole(['admin']), async (req, res) =
   }
 });
 
-const { authenticateJWT, checkRole } = require('../middleware/auth.middleware');
 const { DivisionProgress, User } = require('../models');
 
 router.get('/', authenticateJWT, checkRole(['admin', 'ceo', 'cfo', 'head', 'internal_affairs']), async (req, res) => {
