@@ -63,6 +63,51 @@ router.post('/register', registerValidation, async (req, res) => {
   }
 });
 
+// Alias for /signup to redirect to /register
+router.post('/signup', registerValidation, async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { email, password, name } = req.body;
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ where: { email } });
+    if (existingUser) {
+      return res.status(400).json({ message: 'User already exists' });
+    }
+
+    // Create new user
+    const user = await User.create({
+      email,
+      password,
+      name,
+    });
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: user.id },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRES_IN }
+    );
+
+    res.status(201).json({
+      message: 'User registered successfully',
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error registering user' });
+  }
+});
+
 // Login user
 router.post('/login', loginValidation, async (req, res) => {
   try {
