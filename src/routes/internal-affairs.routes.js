@@ -6,7 +6,7 @@ const { Division } = require('../models');
 const router = express.Router();
 
 // Get all divisions progress
-router.get('/divisions', authenticateJWT, checkRole(['admin']), async (req, res) => {
+router.get('/divisions', authenticateJWT, checkRole(['admin', 'internal_affairs']), async (req, res) => {
   try {
     const divisions = await Division.findAll({
       include: [

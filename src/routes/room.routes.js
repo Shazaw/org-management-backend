@@ -127,7 +127,7 @@ router.get('/rooms/:id/bookings', authenticateJWT, async (req, res) => {
 });
 
 // Approve booking (Resource Manager only)
-router.put('/bookings/:id/approve', authenticateJWT, checkRole(['admin']), [
+router.put('/bookings/:id/approve', authenticateJWT, checkRole(['admin', 'resource_manager']), [
   body('status').isIn(['approved', 'rejected']),
 ], async (req, res) => {
   try {
@@ -189,4 +189,4 @@ router.delete('/bookings/:id', authenticateJWT, async (req, res) => {
   }
 });
 
-module.exports = router; 
+module.exports = router;
