@@ -165,4 +165,33 @@ router.get('/reports', authenticateJWT, checkRole(['admin']), async (req, res) =
   }
 });
 
-module.exports = router; 
+const { authenticateJWT, checkRole } = require('../middleware/auth.middleware');
+const { DivisionProgress, User } = require('../models');
+
+router.get('/', authenticateJWT, checkRole(['admin', 'ceo', 'cfo', 'head', 'internal_affairs']), async (req, res) => {
+  try {
+    const progressReports = await DivisionProgress.findAll();
+    res.json(progressReports);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching progress reports' });
+  }
+});
+
+router.post('/submit', authenticateJWT, checkRole(['head', 'ceo', 'cfo']), async (req, res) => {
+  try {
+    const { divisionId, progress, notes } = req.body;
+
+    const report = await DivisionProgress.create({
+      division_id: divisionId,
+      progress,
+      notes,
+      submitted_by: req.user.id,
+    });
+
+    res.status(201).json(report);
+  } catch (error) {
+    res.status(500).json({ message: 'Error submitting progress report' });
+  }
+});
+
+module.exports = router;

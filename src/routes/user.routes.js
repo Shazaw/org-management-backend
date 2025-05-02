@@ -69,6 +69,28 @@ router.put('/profile', authenticateJWT, [
   }
 });
 
+router.put('/profile', authenticateJWT, async (req, res) => {
+  try {
+    const { name, mainDivision, managerialDivision, availableTimes } = req.body;
+    const user = await User.findByPk(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    user.name = name || user.name;
+    user.main_division_id = mainDivision || user.main_division_id;
+    user.managerial_division_id = managerialDivision || user.managerial_division_id;
+    user.available_times = availableTimes || user.available_times;
+    user.profile_completed = true;
+
+    await user.save();
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating profile' });
+  }
+});
+
 // Get user's available times
 router.get('/available-times', authenticateJWT, async (req, res) => {
   try {
@@ -114,4 +136,23 @@ router.get('/', authenticateJWT, checkRole(['admin']), async (req, res) => {
   }
 });
 
-module.exports = router; 
+router.post('/apply-event', authenticateJWT, async (req, res) => {
+  try {
+    const { eventId, role } = req.body;
+    const user = await User.findByPk(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    user.event_roles = user.event_roles || {};
+    user.event_roles[eventId] = role;
+
+    await user.save();
+    res.json({ message: 'Applied to event successfully', user });
+  } catch (error) {
+    res.status(500).json({ message: 'Error applying to event' });
+  }
+});
+
+module.exports = router;

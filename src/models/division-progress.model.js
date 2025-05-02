@@ -11,40 +11,24 @@ const DivisionProgress = sequelize.define('DivisionProgress', {
     type: DataTypes.UUID,
     allowNull: false,
   },
-  report_type: {
-    type: DataTypes.ENUM('meeting', 'event', 'competition', 'task', 'note'),
+  progress: {
+    type: DataTypes.ENUM('planned', 'ongoing', 'finished'),
     allowNull: false,
   },
-  content: {
+  notes: {
     type: DataTypes.TEXT,
-    allowNull: false,
+    allowNull: true,
   },
-  status: {
-    type: DataTypes.ENUM('planned', 'ongoing', 'completed'),
-    defaultValue: 'planned',
-  },
-  progress_percentage: {
-    type: DataTypes.INTEGER,
-    defaultValue: 0,
-    validate: {
-      min: 0,
-      max: 100,
-    },
-  },
-  created_by: {
+  submitted_by: {
     type: DataTypes.UUID,
     allowNull: false,
   },
-  division_role: {
-    type: DataTypes.ENUM('head', 'coordinator', 'member'),
-    allowNull: false,
-  }
 }, {
   tableName: 'division_progress',
   underscored: true,
   timestamps: true,
   createdAt: 'created_at',
-  updatedAt: 'updated_at'
+  updatedAt: 'updated_at',
 });
 
-module.exports = DivisionProgress; 
+module.exports = DivisionProgress;

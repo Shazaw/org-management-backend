@@ -16,7 +16,7 @@ module.exports = (sequelize) => {
       allowNull: true,
     },
     status: {
-      type: DataTypes.ENUM('pending', 'approved', 'rejected', 'completed'),
+      type: DataTypes.ENUM('pending', 'approved', 'rejected', 'completed', 'cancelled'), // Added 'cancelled'
       defaultValue: 'pending',
     },
     created_by: {
@@ -24,7 +24,7 @@ module.exports = (sequelize) => {
       allowNull: false,
     },
     role: {
-      type: DataTypes.ENUM('head_coordinator', 'coordinator', 'sub_coordinator', 'staff'),
+      type: DataTypes.ENUM('head_coordinator', 'coordinator', 'sub_coordinator', 'staff', ), 
       allowNull: true,
       defaultValue: 'staff'
     },
@@ -45,4 +45,4 @@ module.exports = (sequelize) => {
   });
 
   return Event;
-}; 
+};

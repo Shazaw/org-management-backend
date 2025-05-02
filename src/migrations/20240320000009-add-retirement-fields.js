@@ -39,5 +39,8 @@ module.exports = {
     await queryInterface.removeColumn('users', 'retirement_requested_at');
     await queryInterface.removeColumn('users', 'retirement_approved_at');
     await queryInterface.removeColumn('users', 'retirement_approved_by');
+    await queryInterface.sequelize.query(`
+      ALTER TYPE "enum_users_role" DROP VALUE 'retired';
+    `); // Ensure the 'retired' value is removed
   }
-}; 
+};

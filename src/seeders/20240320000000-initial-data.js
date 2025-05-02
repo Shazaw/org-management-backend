@@ -83,6 +83,47 @@ module.exports = {
         );
       }
 
+      // Check if CFO user exists
+      const [cfoUser] = await queryInterface.sequelize.query(
+        'SELECT id FROM users WHERE email = :email',
+        {
+          replacements: { email: 'cfo@omahti.com' },
+          type: Sequelize.QueryTypes.SELECT
+        }
+      );
+
+      const cfoId = cfoUser ? cfoUser.id : uuidv4();
+      const hashedPassword = await bcrypt.hash('cfo123', 10);
+
+      if (!cfoUser) {
+        await queryInterface.bulkInsert('users', [{
+          id: cfoId,
+          email: 'cfo@omahti.com',
+          password: hashedPassword,
+          name: 'OmahTI CFO',
+          role: 'cfo', // Ensure 'cfo' is valid
+          division_status: 'confirmed',
+          head_approval_status: 'approved',
+          created_at: new Date(),
+          updated_at: new Date(),
+        }]);
+      } else {
+        await queryInterface.sequelize.query(
+          'UPDATE users SET password = :password, name = :name, role = :role, division_status = :divisionStatus, head_approval_status = :headApprovalStatus, updated_at = :updatedAt WHERE id = :id',
+          {
+            replacements: {
+              id: cfoId,
+              password: hashedPassword,
+              name: 'OmahTI CFO',
+              role: 'cfo',
+              divisionStatus: 'confirmed',
+              headApprovalStatus: 'approved',
+              updatedAt: new Date()
+            }
+          }
+        );
+      }
+
       // Create or update divisions
       const divisions = [
         // Main Divisions
@@ -279,4 +320,4 @@ module.exports = {
       throw error;
     }
   }
-}; 
+};

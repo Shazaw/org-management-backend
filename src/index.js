@@ -11,7 +11,12 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: ['https://oticonnect.vercel.app', 'https://oticonnect.onrender.com'],
+  origin: [
+    'https://oticonnect.vercel.app', 
+    'https://oticonnect.onrender.com',
+    'http://localhost:3000',  // Add frontend dev server
+    'http://localhost:3001',  // Add Next.js dev server 
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -51,4 +56,4 @@ sequelize.sync({ alter: process.env.NODE_ENV === 'development' })
   })
   .catch(err => {
     console.error('Unable to sync the database:', err);
-  }); 
+  });

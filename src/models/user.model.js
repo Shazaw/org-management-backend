@@ -25,7 +25,7 @@ module.exports = (sequelize) => {
       allowNull: false,
     },
     role: {
-      type: DataTypes.ENUM('admin', 'ceo', 'head', 'member', 'resource_manager', 'human_development', 'internal_affairs'),
+      type: DataTypes.ENUM('admin', 'ceo', 'head', 'member', 'resource_manager', 'human_development', 'internal_affairs', 'cfo'), // Added 'cfo'
       defaultValue: 'member',
     },
     main_division_id: {
@@ -53,6 +53,18 @@ module.exports = (sequelize) => {
       allowNull: true,
       unique: true,
     },
+    event_roles: {
+      type: DataTypes.JSONB, // Stores roles in events (e.g., head_coordinator, division_coordinator)
+      allowNull: true,
+    },
+    retired_status: {
+      type: DataTypes.ENUM('active', 'retired'),
+      defaultValue: 'active',
+    },
+    profile_completed: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
   }, {
     tableName: 'users',
     underscored: true,
@@ -78,4 +90,4 @@ module.exports = (sequelize) => {
   };
 
   return User;
-}; 
+};
