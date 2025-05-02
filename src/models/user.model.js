@@ -48,10 +48,11 @@ module.exports = (sequelize) => {
       type: DataTypes.JSONB,
       allowNull: true,
     },
-    google_id: {
+    googleId: {
       type: DataTypes.STRING,
       allowNull: true,
       unique: true,
+      field: 'google_id', // Map to the database column name
     },
     event_roles: {
       type: DataTypes.JSONB, // Stores roles in events (e.g., head_coordinator, division_coordinator)
