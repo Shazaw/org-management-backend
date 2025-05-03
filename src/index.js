@@ -10,17 +10,16 @@ require('./config/passport');
 const app = express();
 
 // Middleware
-app.use(cors({
-  origin: [
-    'https://oticonnect.vercel.app', 
-    'https://oticonnect.onrender.com',
-    'http://localhost:3000',  // Add frontend dev server
-    'http://localhost:3001',  // Add Next.js dev server 
-  ],
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+app.use(
+    cors({
+        origin: process.env.NODE_ENV === 'production'
+            ? "https://oticonnect.vercel.app"
+            : "http://localhost:3000",
+        credentials: true,
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allowedHeaders: ["Content-Type", "Authorization"],
+    })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize());
